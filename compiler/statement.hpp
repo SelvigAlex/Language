@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include <memory>
 #include <string>
 #include <iostream>
 #include "expression.hpp"
+#include "value.hpp"
 
 class Statement {
 public:
@@ -15,39 +15,39 @@ public:
 
 class AssigmentStatement : public Statement {
 private:
-    std::unique_ptr<Expression> expression;
+    std::shared_ptr<Expression> expression;
     std::string variable;
 
 public:
-    AssigmentStatement(std::string variable, std::unique_ptr<Expression> expression)
-        : variable(variable), expression(std::move(expression)) {}
+    AssigmentStatement(std::string variable, std::shared_ptr<Expression> expression)
+        : variable(std::move(variable)), expression(std::move(expression)) {}
 
     void execute() override {
-        double result = expression.get()->eval();
+        // Получаем результат выражения
+        std::shared_ptr<Value> result = expression->eval();
+        // Присваиваем результат в переменную
         Variables::set(variable, result);
     }
 
     std::string toString() const override {
-        return variable + " = " + expression.get()->toString();
+        return variable + " = " + expression->toString();
     }
 };
 
 class PrintStatement : public Statement {
 private:
-    std::unique_ptr<Expression> expression;
+    std::shared_ptr<Expression> expression;
 
 public:
-    PrintStatement(std::unique_ptr<Expression> expression) : expression(std::move(expression)) {}
+    explicit PrintStatement(std::shared_ptr<Expression> expression) 
+        : expression(std::move(expression)) {}
 
     void execute() override {
-        std::cout << expression.get()->eval();
+        // Печатаем строковое представление результата выражения
+        std::cout << expression->eval()->asString() << std::endl;
     }
 
     std::string toString() const override {
-        return "print " + expression.get()->toString();
+        return "print " + expression->toString();
     }
-
-
-
-
 };

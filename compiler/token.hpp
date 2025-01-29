@@ -1,28 +1,24 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 enum class tokenType {
-    NUMBER, // 123
+    NUMBER,    // 123
     HEX_NUMBER, // 0x123
-    WORD, // constant
-
+    WORD,      // constant
 
     PLUS,   // +
     MINUS,  // -
     STAR,   // *
     SLASH,  // /
-    EQ, // =
+    EQ,     // =
     LPAREN, // (
     RPAREN, // )
 
-    //! keyword
-    PRINT,
+    PRINT,   // keyword
 
-
-
-    EOF_    // end of file
+    EOF_     // end of file
 };
 
 class token {
@@ -30,17 +26,16 @@ private:
     tokenType type;
     std::string lexeme;
 
-    static const std::map<tokenType, std::string> tokenToString;
+    // Использование unordered_map для улучшения производительности поиска
+    static const std::unordered_map<tokenType, std::string> tokenToString;
 
 public:
-    token(tokenType type, const std::string& lexeme) : type(type), lexeme(lexeme) {}
+    explicit token(tokenType type, const std::string& lexeme) : type(type), lexeme(lexeme) {}
 
     void setLexeme(const std::string& lexeme) { this->lexeme = lexeme; }
-
     void setTokenType(tokenType type) { this->type = type; }
 
     const std::string& getLexeme() const { return lexeme; }
-
     tokenType getTokenType() const { return type; }
 
     std::string toString() const {
@@ -49,8 +44,8 @@ public:
     }
 };
 
-// Инициализация статической переменной
-const std::map<tokenType, std::string> token::tokenToString = {
+// Инициализация статической переменной с использованием unordered_map
+const std::unordered_map<tokenType, std::string> token::tokenToString = {
     {tokenType::PLUS, "OPERATOR +"},
     {tokenType::MINUS, "OPERATOR -"},
     {tokenType::STAR, "OPERATOR *"},

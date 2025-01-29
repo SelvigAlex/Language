@@ -1,4 +1,3 @@
-word = 2 * 2 - 1
-word2 = PI + word
-print word
-print word2
+print 2
+word = 12 + 2
+print 443

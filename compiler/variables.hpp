@@ -1,27 +1,46 @@
+#pragma once
 #include <iostream>
 #include <unordered_map>
 #include <string>
+#include "value.hpp"
 
 class Variables {
 public:
+    // Проверяет, существует ли переменная с данным ключом
     static bool isExists(const std::string& key) {
         return variables.find(key) != variables.end();
     }
 
-    static double get(const std::string& key) {
-        if (!isExists(key)) return 0.0;
-        return variables.at(key);
+    // Возвращает значение переменной по ключу, или 0, если переменная не существует
+    static std::shared_ptr<Value> get(const std::string& key) {
+        auto it = variables.find(key);
+        if (it != variables.end()) {
+            return it->second;
+        }
+        // Выбрасываем исключение, если переменная не найдена
+        throw std::runtime_error("Variable '" + key + "' not found");
     }
 
-    static void set(const std::string& key, double value) {
-        variables.insert({key, std::move(value)});
+    // Устанавливает значение переменной
+    static void set(const std::string& key, std::shared_ptr<Value> value) {
+        variables[key] = value;
     }
+
+    // Удаляет переменную
+    static void remove(const std::string& key) {
+        variables.erase(key);
+    }
+
+    //Инициализация переменных по умолчанию
+    static void initializeDefaults() {
+        variables.insert({"PI", std::make_shared<NumberValue>(3.14159)});
+        set("E", std::make_shared<NumberValue>(2.71828));
+    }
+
 private:
-    static std::unordered_map<std::string, double> variables;
+    // Контейнер для хранения переменных
+    static std::unordered_map<std::string, std::shared_ptr<Value>> variables;
 };
 
-
-std::unordered_map<std::string, double> Variables::variables {
-        {"PI", 3.141592653589793},
-        {"E", 2.718281828459045}
-};
+// Инициализация статической переменной
+std::unordered_map<std::string, std::shared_ptr<Value>> Variables::variables;
