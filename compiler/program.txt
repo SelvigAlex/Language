@@ -1,0 +1,4 @@
+word = 2 * 2 - 1
+word2 = PI + word
+print word
+print word2
