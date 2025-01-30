@@ -27,24 +27,106 @@ public:
 
 private:
     std::shared_ptr<Expression> expression() {
-        return additive();
+        return logicalOr();
+    }
+
+
+    std::shared_ptr<Expression> conditional() {
+        auto result = additive();
+
+        while (true) {
+            if (match(tokenType::LT)) {
+                result = std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::LT, std::move(result), additive());
+            }
+            else if (match(tokenType::LTEQ)) {
+                result = std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::LTEQ, std::move(result), additive());
+            }
+            else if (match(tokenType::GT)) {
+                result = std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::GT, std::move(result), additive());
+            }
+            else if (match(tokenType::GTEQ)) {
+                result = std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::GTEQ, std::move(result), additive());
+            }
+            else {
+                break;
+            }
+        }
+        return result;
+    }
+
+    std::shared_ptr<Expression> logicalOr() {
+        std::shared_ptr<Expression> result = logicalAnd();
+        while(true) {
+            if (match(tokenType::BARBAR)) {
+                result = std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::OR, std::move(result), logicalAnd());
+                continue;
+            }
+            break;
+        }
+        
+        
+        return result;
+    }
+
+    std::shared_ptr<Expression> logicalAnd() {
+        std::shared_ptr<Expression> result = equality();
+        while(true) {
+            if (match(tokenType::AMPAMP)) {
+                result = std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::AND, std::move(result), equality());
+                continue;
+            }
+            break;
+        }
+        return result;
+    }
+
+    std::shared_ptr<Expression> equality() {
+        std::shared_ptr<Expression> result = conditional();
+        if (match(tokenType::EQEQ)) {
+            return std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::EQUALS, std::move(result), conditional());
+        }
+        else if (match(tokenType::EXCLEQ)) {
+            return std::make_shared<ConditionalExpression>(ConditionalExpression::Operator::NOT_EQUALS, std::move(result), conditional());
+        }
+        return result;
+
     }
 
     std::shared_ptr<Statement> statement() {
         if (match(tokenType::PRINT)) {
             return std::make_shared<PrintStatement>(expression());
         }
+        if (match(tokenType::IF)) {
+            return ifElse();
+        }
         return assigmentStatement();
     }
 
     std::shared_ptr<Statement> assigmentStatement() {
         auto current = get(0);
-        if (match(tokenType::WORD) && match(tokenType::EQ)) {
+        if (match(tokenType::WORD) && get(0).getTokenType() == tokenType::EQ) {
             std::string variable = current.getLexeme();
+            consume(tokenType::EQ);
             return std::make_shared<AssigmentStatement>(variable, expression());
         }
         throw std::runtime_error("Invalid assignment statement: token " + current.getLexeme() + " doesn't match");
     }
+
+    std::shared_ptr<Statement> ifElse() {
+        std::shared_ptr<Expression> condition = expression();
+        std::shared_ptr<Statement> ifStatement = statement();
+        std::shared_ptr<Statement> elseStatement;
+
+        if (match(tokenType::ELSE)) {
+            elseStatement = statement();
+        } else {
+            elseStatement = nullptr;
+        }
+
+        return std::make_shared<IfStatement>(condition, ifStatement, elseStatement);
+    }
+
+   
 
     std::shared_ptr<Expression> additive() {
         auto result = multiplicative();

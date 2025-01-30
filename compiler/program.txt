@@ -1,6 +1,26 @@
-word = 1 + 2
-print "word = " + word + "\n"
+/! weqew
+
+/* sdssd */
+
+
+
+str = "Клев - Долбаеб\n"
+if (2 < 1) /! false
+    print str
+else 
+    print "Клев все равно долбоеб\n"
+
+
+word = 2 + 2
 word2 = PI + word
+str = "a" * 5 + "ba" * 7 + "\n"
+print str * "3" * 2
+print "word = " + word + "\n"
 print "word2 = " + word2 + "\n"
-str = "КЛЕВЦОВ - ДОЛБОЕБ " * CLEN
-print str
+print "1" > "abc"
+print "\n"
+if (1 <= 2) print "1 = 1"
+else print "1 != 1"
+print "\n"
+if (40 < 50 && 50 < 60) print "true"
+else print "false" /! false

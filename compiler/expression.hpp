@@ -6,6 +6,7 @@
 #include "variables.hpp"
 #include "value.hpp"
 
+
 class Expression {
 public:
     virtual ~Expression() = default; // Виртуальный деструктор
@@ -42,35 +43,36 @@ public:
     BinaryExpression(char operation, std::shared_ptr<Expression> expr1, std::shared_ptr<Expression> expr2)
         : operation(operation), expr1(std::move(expr1)), expr2(std::move(expr2)) {}
 
-    // std::shared_ptr<Value> eval() const override {
-    //     std::shared_ptr<Value> value1 = expr1->eval();
+    /*std::shared_ptr<Value> eval() const override {
+        std::shared_ptr<Value> value1 = expr1->eval();
 
-    //     if (std::shared_ptr<StringValue> New = dynamic_cast<StringValue*>(value1)) {
+        if (std::shared_ptr<StringValue> New = dynamic_cast<StringValue*>(value1)) {
 
-    //     }
+        }
 
-    //     double number1 = value1->asNumber();
-    //     double number2 = expr2->eval()->asNumber();
+        double number1 = value1->asNumber();
+        double number2 = expr2->eval()->asNumber();
         
-    //     // Проверка на деление на ноль
-    //     if (operation == '/' && number2 == 0) {
-    //         throw std::runtime_error("Division by zero");
-    //     }
+        // Проверка на деление на ноль
+        if (operation == '/' && number2 == 0) {
+            throw std::runtime_error("Division by zero");
+        }
 
-    //     switch (operation) {
-    //         case '-': return std::make_shared<NumberValue>(number1 - number2);
-    //         case '*': return std::make_shared<NumberValue>(number1 * number2);
-    //         case '/': return std::make_shared<NumberValue>(number1 / number2);
-    //         case '+':
-    //         default:
-    //             return std::make_shared<NumberValue>(number1 + number2);
-    //     }
-    // }
+        switch (operation) {
+            case '-': return std::make_shared<NumberValue>(number1 - number2);
+            case '*': return std::make_shared<NumberValue>(number1 * number2);
+            case '/': return std::make_shared<NumberValue>(number1 / number2);
+            case '+':
+            default:
+                return std::make_shared<NumberValue>(number1 + number2);
+        }
+    }*/
 
     std::shared_ptr<Value> eval() const override {
         std::shared_ptr<Value> value1 = expr1->eval();
         std::shared_ptr<Value> value2 = expr2->eval();
         
+    
         if (dynamic_cast<StringValue*>(value1.get())) {
             std::string string1 = value1->asString();
             if (operation == '*') {
@@ -100,6 +102,101 @@ public:
     std::string toString() const override {
         return "(" + expr1->toString() + " " + operation + " " + expr2->toString() + ")";
     }
+};
+
+class ConditionalExpression : public Expression{
+public:
+    enum Operator {
+        PLUS,
+        MINUS,
+        MULTIPLY,
+        DIVIDE,
+
+        EQUALS,
+        NOT_EQUALS,
+
+        LT, 
+        LTEQ,
+        GT, 
+        GTEQ,
+
+        AND,
+        OR
+    };
+
+
+
+
+private:
+    std::shared_ptr<Expression> expr1, expr2;
+    Operator operation;
+
+    std::unordered_map<Operator, std::string> operatorNames = {
+        {Operator::PLUS, "+"},
+        {Operator::MINUS, "-"},
+        {Operator::MULTIPLY, "*"},
+        {Operator::DIVIDE, "/"},
+        {Operator::EQUALS, "=="},
+        {Operator::NOT_EQUALS, "!="},
+        {Operator::LT, "<"},
+        {Operator::LTEQ, "<="},
+        {Operator::GT, ">"},
+        {Operator::GTEQ, ">="},
+        {Operator::AND, "&&"},
+        {Operator::OR, "||"}
+    };
+
+
+
+public:
+    ConditionalExpression(Operator operation, std::shared_ptr<Expression> expr1, std::shared_ptr<Expression> expr2)
+        : operation(operation), expr1(std::move(expr1)), expr2(std::move(expr2)) {}
+
+        // Функция для получения строки из перечисления
+    
+    std::shared_ptr<Value> eval() const override {
+        std::shared_ptr<Value> value1 = expr1->eval();
+        std::shared_ptr<Value> value2 = expr2->eval();
+
+
+        double number1, number2;
+        if (dynamic_cast<StringValue*>(value1.get())) {
+            number1 = value1->asString().compare(value2->asString());
+            number2 = 0;
+
+        } else {
+            number1 = value1->asNumber();
+            number2 = value2->asNumber();
+        }
+           
+        bool result;
+        switch (operation) {
+            case LT: result = number1 < number2; break;
+            case LTEQ: result = number1 <= number2; break;
+            case GT: result = number1 > number2; break;
+            case GTEQ: result = number1 >= number2; break;
+            case NOT_EQUALS: result = number1 != number2; break;
+
+            case AND: result = (number1 != 0) && (number2 != 0); break;
+            case OR: result = (number1 != 0) || (number2 != 0); break;
+
+            case EQUALS:
+            default: result = number1 == number2; break;
+
+        }
+        return std::make_shared<NumberValue>(result);
+    }
+
+    std::string asString(Operator op) {
+        return operatorNames[op];
+    }
+
+
+    std::string toString() const override {
+        return "(" + expr1->toString() + " " + expr2->toString() + ")";
+    }
+
+
 };
 
 class UnaryExpression : public Expression {

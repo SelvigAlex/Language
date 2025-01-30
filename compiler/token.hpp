@@ -8,16 +8,35 @@ enum class tokenType {
     HEX_NUMBER, // 0x123
     WORD,      // constant
     TEXT,       // string
+    
+
 
     PLUS,   // +
     MINUS,  // -
     STAR,   // *
     SLASH,  // /
     EQ,     // =
+    EQEQ,   // ==
+    EXCL,   // !
+    EXCLEQ,  // !=
     LPAREN, // (
     RPAREN, // )
+    LT,     // <
+    LTEQ,   // <=
+    GT,     // >
+    GTEQ,   // <
+    AMP,    // &
+    AMPAMP, // &&
+    BAR,    // |
+    BARBAR, // ||
 
-    PRINT,   // keyword
+
+    //! keyword
+    PRINT,   
+    IF,
+    ELSE,
+
+
 
     EOF_     // end of file
 };
@@ -59,4 +78,17 @@ const std::unordered_map<tokenType, std::string> token::tokenToString = {
     {tokenType::WORD, "WORD"},
     {tokenType::PRINT, "KEYWORD PRINT"},
     {tokenType::TEXT, "TEXT"},
+    {tokenType::IF, "IF"},
+    {tokenType::ELSE, "ELSE"},
+    {tokenType::LT, "OPERATOR <"},
+    {tokenType::GT, "OPERATOR >"},
+    {tokenType::EQEQ, "OPERATOR =="},
+    {tokenType::LTEQ, "OPERATOR <="},
+    {tokenType::GTEQ, "OPERATOR >="},
+    {tokenType::EXCL, "OPERATOR !"},
+    {tokenType::EXCLEQ, "OPERATOR !="},
+    {tokenType::AMP, "OPERATOR &"},
+    {tokenType::AMPAMP, "OPERATOR &&"},
+    {tokenType::BAR, "OPERATOR |"},
+    {tokenType::BARBAR, "OPERATOR ||"},
 };

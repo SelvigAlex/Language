@@ -46,6 +46,4 @@ private:
 std::unordered_map<std::string, std::shared_ptr<Value>> Variables::variables = {
     {"PI", std::make_shared<NumberValue>(3.14159265358979323846)},
     {"E", std::make_shared<NumberValue>(2.7182818284590452354)},
-    {"CLEN", std::make_shared<NumberValue>(6)},
-
 };

@@ -16,9 +16,13 @@ public:
 class NumberValue : public Value {
 private:
     double value;  // Числовое значение
+    int number;
 
 public:
     explicit NumberValue(double value) : value(value) {}
+    explicit NumberValue(bool value) {
+        this->value = value ? 1 : 0;
+    }
 
     double asNumber() const override {
         return value;  // Преобразуем в число и возвращаем
