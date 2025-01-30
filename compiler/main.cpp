@@ -6,6 +6,8 @@
 #include "statement.hpp"
 #include "parser.hpp"
 
+#include <cmath>
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -21,27 +23,28 @@ int main(int argc, char *argv[]) {
         lexer L(input);
         vector<token> tokens = L.tokenize();
 
-        // Вывод токенов
-        for (const auto &elem : tokens) {
-            cout << elem.toString() << ' ' << elem.getLexeme() << '\n';
-        }
+        // // Вывод токенов
+        // for (const auto &elem : tokens) {
+        //     cout << elem.toString() << ' ' << elem.getLexeme() << '\n';
+        // }
 
         // Разбор и выполнение инструкций
         parser P(tokens);
         vector<shared_ptr<Statement>> statements = P.parse();
 
-        // Вывод представлений инструкций
-        for (const auto &state : statements) {
-            cout << state->toString();
-        }
-        cout << '\n';
+        // //Вывод представлений инструкций
+        // for (const auto &state : statements) {
+        //     cout << state->toString();
+        // }
+        // cout << '\n';
 
         // Выполнение инструкций
         for (const auto &state : statements) {
             state->execute();
         }
-        //cout << '\n';
+        
     }
+    cout << '\n';
     // Закрытие файла
     in.close();
     return 0;

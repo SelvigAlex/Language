@@ -44,7 +44,7 @@ public:
 
     void execute() override {
         // Печатаем строковое представление результата выражения
-        std::cout << expression->eval()->asString() << std::endl;
+        std::cout << expression->eval()->asString();
     }
 
     std::string toString() const override {

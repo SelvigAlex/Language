@@ -13,13 +13,16 @@ public:
     virtual std::string toString() const = 0; // Чисто виртуальная функция для вывода выражения на экран
 };
 
-class NumberExpression : public Expression {
+class ValueExpression : public Expression {
 private:
-    std::shared_ptr<NumberValue> value;
+    std::shared_ptr<Value> value;
 
 public:
-    explicit NumberExpression(double value) 
+    explicit ValueExpression(double value) 
         : value(std::make_shared<NumberValue>(value)) {}
+
+    explicit ValueExpression(std::string value) 
+        : value(std::make_shared<StringValue>(value)) {}
 
     std::shared_ptr<Value> eval() const override {
         return value;
@@ -39,22 +42,58 @@ public:
     BinaryExpression(char operation, std::shared_ptr<Expression> expr1, std::shared_ptr<Expression> expr2)
         : operation(operation), expr1(std::move(expr1)), expr2(std::move(expr2)) {}
 
-    std::shared_ptr<Value> eval() const override {
-        double number1 = expr1->eval()->asNumber();
-        double number2 = expr2->eval()->asNumber();
+    // std::shared_ptr<Value> eval() const override {
+    //     std::shared_ptr<Value> value1 = expr1->eval();
+
+    //     if (std::shared_ptr<StringValue> New = dynamic_cast<StringValue*>(value1)) {
+
+    //     }
+
+    //     double number1 = value1->asNumber();
+    //     double number2 = expr2->eval()->asNumber();
         
-        // Проверка на деление на ноль
-        if (operation == '/' && number2 == 0) {
-            throw std::runtime_error("Division by zero");
+    //     // Проверка на деление на ноль
+    //     if (operation == '/' && number2 == 0) {
+    //         throw std::runtime_error("Division by zero");
+    //     }
+
+    //     switch (operation) {
+    //         case '-': return std::make_shared<NumberValue>(number1 - number2);
+    //         case '*': return std::make_shared<NumberValue>(number1 * number2);
+    //         case '/': return std::make_shared<NumberValue>(number1 / number2);
+    //         case '+':
+    //         default:
+    //             return std::make_shared<NumberValue>(number1 + number2);
+    //     }
+    // }
+
+    std::shared_ptr<Value> eval() const override {
+        std::shared_ptr<Value> value1 = expr1->eval();
+        std::shared_ptr<Value> value2 = expr2->eval();
+        
+        if (dynamic_cast<StringValue*>(value1.get())) {
+            std::string string1 = value1->asString();
+            if (operation == '*') {
+                int iterations = static_cast<int>(value2->asNumber());
+                std::string result;
+                for (int i = 0; i < iterations; ++i) {
+                    result += string1;
+                }
+                return std::make_shared<StringValue>(result);
+            } else {
+                return std::make_shared<StringValue>(string1 + value2->asString());
+            }
         }
+
+        double number1 = value1->asNumber();
+        double number2 = value2->asNumber();
 
         switch (operation) {
             case '-': return std::make_shared<NumberValue>(number1 - number2);
             case '*': return std::make_shared<NumberValue>(number1 * number2);
             case '/': return std::make_shared<NumberValue>(number1 / number2);
             case '+':
-            default:
-                return std::make_shared<NumberValue>(number1 + number2);
+            default: return std::make_shared<NumberValue>(number1 + number2);
         }
     }
 
@@ -79,6 +118,8 @@ public:
             case '+':
             default:
                 return std::make_shared<NumberValue>(expr1->eval()->asNumber()); // Положительное значение
+            //case '++': префикс и постфикс
+            //case '--':
         }
     }
 

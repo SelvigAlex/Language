@@ -60,7 +60,6 @@ private:
                 break;
             }
         }
-
         return result;
     }
 
@@ -95,13 +94,16 @@ private:
     std::shared_ptr<Expression> primary() {
         const auto& current = get(0);
         if (match(tokenType::NUMBER)) {
-            return std::make_shared<NumberExpression>(std::stod(current.getLexeme()));
+            return std::make_shared<ValueExpression>(std::stod(current.getLexeme()));
         }
         if (match(tokenType::HEX_NUMBER)) { 
-            return std::make_shared<NumberExpression>(std::stoul(current.getLexeme(), nullptr, 16));
+            return std::make_shared<ValueExpression>(std::stoul(current.getLexeme(), nullptr, 16));
         }
         if (match(tokenType::WORD)) {
             return std::make_shared<VariableExpression>(current.getLexeme());
+        }
+        if (match(tokenType::TEXT)) {
+            return std::make_shared<ValueExpression>(current.getLexeme());
         }
         if (match(tokenType::LPAREN)) {
             auto result = expression();

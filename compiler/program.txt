@@ -1,3 +1,6 @@
-print 2
-word = 12 + 2
-print 443
+word = 1 + 2
+print "word = " + word + "\n"
+word2 = PI + word
+print "word2 = " + word2 + "\n"
+str = "КЛЕВЦОВ - ДОЛБОЕБ " * CLEN
+print str

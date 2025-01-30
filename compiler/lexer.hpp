@@ -14,8 +14,10 @@ private:
     size_t position = 0;
 
     const std::string OPERATOR_CHARS = "+-*/()=";
-    const std::vector<tokenType> OPERATOR_TOKENS = {
-        tokenType::PLUS, tokenType::MINUS, tokenType::STAR, tokenType::SLASH, tokenType::LPAREN, tokenType::RPAREN, tokenType::EQ
+    const std::vector<tokenType> OPERATOR_TOKENS = {tokenType::PLUS, tokenType::MINUS, 
+                                                    tokenType::STAR, tokenType::SLASH, 
+                                                    tokenType::LPAREN, tokenType::RPAREN, 
+                                                    tokenType::EQ
     };
 
     char next() {
@@ -76,8 +78,56 @@ private:
         } else {
             addToken(tokenType::WORD, buffer);
         }
-        
     }
+
+    void tokenizeText() {
+        next(); // pass "
+        std::string buffer;
+        char current = peek();
+        while (true) {
+            if(current == '\\') {
+                current = next();
+                current = next();
+                switch(current) {
+                    case '"': current = next(); buffer += '"'; continue;
+                    case 'n': current = next(); buffer += '\n'; continue;
+                    case 't': current = next(); buffer += '\t'; continue;
+                }
+                buffer += '\\';
+                continue;
+            }
+            if (current == '"') break;
+            // current = next();
+            // buffer += current;
+            buffer += next();
+            current = peek();
+        }
+        next(); // pass closing "
+        addToken(tokenType::TEXT, buffer);
+    }
+    
+    //  void tokenizeText() {
+    //     next(); // pass "
+    //     std::string buffer;
+    //     //char current = peek();
+    //     while (true) {
+    //         if(peek() == '\\') {
+    //             next();
+    //             switch(peek()) {
+    //                 case '"': next(); buffer += '"'; continue;
+    //                 case 'n': next(); buffer += '\n'; continue;
+    //                 case 't': next(); buffer += '\t'; continue;
+    //             }
+    //             buffer += '\\';
+    //             continue;
+    //         }
+    //         if (peek() == '"') break;
+    //         buffer += next();
+    //         //current = next();
+    //     }
+    //     next(); // pass closing "
+    //     addToken(tokenType::TEXT, buffer);
+    // }
 
     void tokenizeOperator() {
         size_t pos = OPERATOR_CHARS.find(peek());
@@ -100,6 +150,9 @@ public:
                 tokenizeNumber();
             } else if (std::isalpha(currentSymbol)) {
                 tokenizeWord();
+            }
+            else if (currentSymbol == '"') {
+                tokenizeText();
             }
             else if (OPERATOR_CHARS.find(currentSymbol) != std::string::npos) {
                 tokenizeOperator();

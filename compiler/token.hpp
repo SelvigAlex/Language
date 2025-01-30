@@ -7,6 +7,7 @@ enum class tokenType {
     NUMBER,    // 123
     HEX_NUMBER, // 0x123
     WORD,      // constant
+    TEXT,       // string
 
     PLUS,   // +
     MINUS,  // -
@@ -56,5 +57,6 @@ const std::unordered_map<tokenType, std::string> token::tokenToString = {
     {tokenType::LPAREN, "OPERATOR ("},
     {tokenType::RPAREN, "OPERATOR )"},
     {tokenType::WORD, "WORD"},
-    {tokenType::PRINT, "KEYWORD PRINT"}
+    {tokenType::PRINT, "KEYWORD PRINT"},
+    {tokenType::TEXT, "TEXT"},
 };

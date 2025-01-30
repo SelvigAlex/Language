@@ -31,11 +31,11 @@ public:
         variables.erase(key);
     }
 
-    //Инициализация переменных по умолчанию
-    static void initializeDefaults() {
-        variables.insert({"PI", std::make_shared<NumberValue>(3.14159)});
-        set("E", std::make_shared<NumberValue>(2.71828));
-    }
+    // //Инициализация переменных по умолчанию
+    // static void initializeDefaults() {
+    //     variables.insert({"PI", std::make_shared<NumberValue>(3.14159)});
+    //     set("E", std::make_shared<NumberValue>(2.71828));
+    // }
 
 private:
     // Контейнер для хранения переменных
@@ -43,4 +43,9 @@ private:
 };
 
 // Инициализация статической переменной
-std::unordered_map<std::string, std::shared_ptr<Value>> Variables::variables;
+std::unordered_map<std::string, std::shared_ptr<Value>> Variables::variables = {
+    {"PI", std::make_shared<NumberValue>(3.14159265358979323846)},
+    {"E", std::make_shared<NumberValue>(2.7182818284590452354)},
+    {"CLEN", std::make_shared<NumberValue>(6)},
+
+};
