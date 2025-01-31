@@ -75,5 +75,12 @@
         "typeinfo": "cpp",
         "variant": "cpp"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/alexs/reverse/compiler",
+            "binaryPath": "/home/alexs/reverse/compiler/sela",
+            "binaryArgs": []
+        }
+    ]
 }

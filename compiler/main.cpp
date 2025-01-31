@@ -1,59 +1,46 @@
-#include "lexer.hpp"
+#include "ast/statement.hpp"
+#include "parser/lexer.hpp"
+#include "parser/parser.hpp"
+#include <cmath>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <fstream>
-#include "statement.hpp"
-#include "parser.hpp"
-#include <cmath>
-#include <sstream>
-
 
 using namespace std;
 
-std::string readFile(const std::string& filename) {
-    std::ifstream file(filename, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Could not open file");
-    }
+std::string readFile(const std::string &filename) {
+  std::ifstream file(filename, std::ios::binary);
+  if (!file) {
+    throw std::runtime_error("Could not open file");
+  }
 
-    std::ostringstream ss;
-    ss << file.rdbuf(); // Чтение всего содержимого в строковый поток
-    return ss.str(); // Возвращаем строку
+  std::ostringstream ss;
+  ss << file.rdbuf(); // Чтение всего содержимого в строковый поток
+  return ss.str();    // Возвращаем строку
 }
 
-
-int main(int argc, char *argv[]) {
-    std::string input;
-    try {
-        input = readFile("program.txt");
-        //std::cout << "File content: " << input << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-    lexer L(input);
-    vector<token> tokens = L.tokenize();
-
-    // // Вывод токенов
-    // for (const auto &elem : tokens) {
-    //     cout << elem.toString() << ' ' << elem.getLexeme() << '\n';
-    // }
-
-    // Разбор и выполнение инструкций
-    parser P(tokens);
-    vector<shared_ptr<Statement>> statements = P.parse();
-
-    // //Вывод представлений инструкций
-    // for (const auto &state : statements) {
-    //     cout << state->toString();
-    // }
-    // cout << '\n';
-
-    // Выполнение инструкций
-    for (const auto &state : statements) {
-        state->execute();
-    }
-    cout << '\n';
-    // Закрытие файла
-    return 0;
+int main() {
+  std::string input;
+  try {
+    input = readFile("program.txt");
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << std::endl;
+  }
+  lexer L(input);
+  vector<token> tokens = L.tokenize();
+  parser P(tokens);
+//   for (const auto &t : tokens) {
+//     cout << t.toString() << '\n';
+//   }
+  shared_ptr<Statement> program = P.parse();
+  //cout << program->toString();
+  program->execute();
+  cout << '\n';
+  return 0;
 }
+
+/*number = 10
+
+*/

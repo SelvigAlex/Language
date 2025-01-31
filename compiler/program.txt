@@ -1,17 +1,4 @@
-/! weqew
-
-/* sdssd */
-
-
-
-str = "Клев - Долбаеб\n"
-if (2 < 1) /! false
-    print str
-else 
-    print "Клев все равно долбоеб\n"
-
-
-word = 2 + 2
+/*word = 2 + 2
 word2 = PI + word
 str = "a" * 5 + "ba" * 7 + "\n"
 print str * "3" * 2
@@ -22,5 +9,21 @@ print "\n"
 if (1 <= 2) print "1 = 1"
 else print "1 != 1"
 print "\n"
-if (40 < 50 && 50 < 60) print "true"
-else print "false" /! false
+if (40 < 50 || 50 > 60) {
+    print "true1\n"
+    print "true2\n"
+    i = 0
+    while (i < 10) {
+        print "i = " + i + "\n"
+        i = i + 1
+    }
+    for i = 0, i < 10, i = i + 1 {
+        print "i = " + i + "\n"
+    }
+}
+else print "false"*/
+/! ffrfr
+
+for (i = 0; i < 10; i = i + 1) {
+    print "j = " + i + "\n"
+}
