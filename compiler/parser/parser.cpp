@@ -2,6 +2,7 @@
 #include "token.hpp"
 #include <memory>
 #include <stdexcept>
+#include "/home/alexs/reverse/compiler/lib/function.hpp"
 
 const token parser::EOF_TOKEN = token(tokenType::EOF_, "");
 
@@ -28,6 +29,17 @@ std::shared_ptr<Statement> parser::statementOrBlock() {
   if (get(0).getTokenType() == tokenType::LBRACE)
     return block();
   return statement();
+}
+
+std::shared_ptr<FunctionalExpression> parser::function() {
+  std::string name = consume(tokenType::WORD).getLexeme();
+  consume(tokenType::LPAREN);
+  std::shared_ptr<FunctionalExpression> function = std::make_shared<FunctionalExpression>(name);
+  while (!match(tokenType::RPAREN)) {
+    function->addArgument(expression());
+    match(tokenType::SEMICOLON);
+  }
+  return function;
 }
 
 std::shared_ptr<Expression> parser::expression() { return logicalOr(); }
@@ -96,8 +108,11 @@ std::shared_ptr<Expression> parser::equality() {
 }
 
 std::shared_ptr<Statement> parser::statement() {
-  if (match(tokenType::PRINT)) {
-    return std::make_shared<PrintStatement>(expression());
+  if (get(0).getTokenType() == tokenType::WORD &&  get(1).getTokenType() == tokenType::LPAREN) {
+    return std::make_shared<FunctionStatement>(function());
+  }
+  if (match(tokenType::ECHO)) {
+    return std::make_shared<EchoStatement>(expression());
   }
   if (match(tokenType::IF)) {
     return ifElse();
@@ -197,7 +212,6 @@ std::shared_ptr<Expression> parser::multiplicative() {
       break;
     }
   }
-
   return result;
 }
 
@@ -213,12 +227,15 @@ std::shared_ptr<Expression> parser::unary() {
 
 std::shared_ptr<Expression> parser::primary() {
   const auto& current = get(0);
+  //std::cout << current.toString() << '\n'; 
   if (match(tokenType::NUMBER)) {
     return std::make_shared<ValueExpression>(std::stod(current.getLexeme()));
   }
   if (match(tokenType::HEX_NUMBER)) {
-    return std::make_shared<ValueExpression>(
-      std::stoul(current.getLexeme(), nullptr, 16));
+    return std::make_shared<ValueExpression>(std::stoul(current.getLexeme(), nullptr, 16));
+  }
+  if (current.getTokenType() == tokenType::WORD &&  get(1).getTokenType() == tokenType::LPAREN) {
+    return function();
   }
   if (match(tokenType::WORD)) {
     return std::make_shared<VariableExpression>(current.getLexeme());
@@ -226,15 +243,11 @@ std::shared_ptr<Expression> parser::primary() {
   if (match(tokenType::TEXT)) {
     return std::make_shared<ValueExpression>(current.getLexeme());
   }
-  // if (get(0).getTokenType() == tokenType::WORD &&  get(1).getTokenType() == tokenType::LPAREN) {
-  //   throw std::runtime_error("qwerty");
-  // }
   if (match(tokenType::LPAREN)) {
     auto result = expression();
     consume(tokenType::RPAREN);
     return result;
   }
-
   throw std::runtime_error("Unexpected token: " + current.getLexeme());
 }
 
@@ -281,11 +294,47 @@ std::string parser::toString(tokenType type) const {
     return "HEX_NUMBER";
   case tokenType::WORD:
     return "WORD";
-  case tokenType::PRINT:
+  case tokenType::ECHO:
     return "PRINT";
   case tokenType::LPAREN:
     return "LPAREN";
   case tokenType::RPAREN:
+    return "RPAREN";
+  case tokenType::EQEQ:
+    return "EQEQ";
+  case tokenType::EXCLEQ:
+    return "EXCLEQ";
+  case tokenType::LT:
+    return "LT";
+  case tokenType::LTEQ:
+    return "LTEQ";
+  case tokenType::LBRACE:
+    return "LBRACE";
+  case tokenType::GT:
+    return "GT";
+  case tokenType::GTEQ:
+    return "RPAGTEQREN";
+  case tokenType::RBRACE:
+    return "RBRACE";
+  case tokenType::WHILE:
+    return "WHILE";
+  case tokenType::FOR:
+    return "FOR";
+  case tokenType::DO:
+    return "DO";
+  case tokenType::BREAK:
+    return "BREAK";
+  case tokenType::CONTINUE:
+    return "CONTINUE";
+  case tokenType::SEMICOLON:
+    return "SEMICOLON";
+  case tokenType::AMP:
+    return "RPAREN";
+  case tokenType::AMPAMP:
+    return "RPAREN";
+  case tokenType::BAR:
+    return "RPAREN";
+  case tokenType::BARBAR:
     return "RPAREN";
   case tokenType::EOF_:
     return "EOF";

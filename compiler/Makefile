@@ -13,7 +13,9 @@ SRCS = main.cpp \
        /home/alexs/reverse/compiler/lib/variables.cpp \
        /home/alexs/reverse/compiler/parser/parser.cpp \
 	   /home/alexs/reverse/compiler/parser/lexer.cpp \
-	   /home/alexs/reverse/compiler/parser/token.cpp
+	   /home/alexs/reverse/compiler/parser/token.cpp \
+	   /home/alexs/reverse/compiler/lib/function.cpp
+
 
 # Список объектных файлов
 OBJS = $(SRCS:.cpp=.o)

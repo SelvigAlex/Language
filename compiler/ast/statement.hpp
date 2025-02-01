@@ -4,7 +4,6 @@
 #include <string>
 #include "expression.hpp"
 #include <vector>
-#include "/home/alexs/reverse/compiler/lib/value.hpp"
 
 class Statement {
 public:
@@ -24,12 +23,12 @@ public:
     std::string toString() const override;
 };
 
-class PrintStatement : public Statement {
+class EchoStatement : public Statement {
 private:
     std::shared_ptr<Expression> expression;
 
 public:
-    explicit PrintStatement(std::shared_ptr<Expression> expression);
+    explicit EchoStatement(std::shared_ptr<Expression> expression);
     void execute() override;
     std::string toString() const override;
 };
@@ -106,6 +105,16 @@ private:
 
 public:
     ~ContinueStatement() noexcept = default;
+    void execute() override;
+    std::string toString() const override;
+};
+
+class FunctionStatement : public Statement {
+private:
+    std::shared_ptr<FunctionalExpression> function;
+
+public:
+    explicit FunctionStatement(std::shared_ptr<FunctionalExpression> function);
     void execute() override;
     std::string toString() const override;
 };

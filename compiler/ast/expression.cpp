@@ -1,7 +1,8 @@
 #include "expression.hpp"
+#include <memory>
 #include <stdexcept>
 #include "/home/alexs/reverse/compiler/lib/variables.hpp"
-
+#include "/home/alexs/reverse/compiler/lib/function.hpp"
 
 ValueExpression::ValueExpression(double value)
     : value(std::make_shared<NumberValue>(value)) {}
@@ -157,4 +158,33 @@ std::shared_ptr<Value> VariableExpression::eval() const {
 
 std::string VariableExpression::toString() const {
     return name; // Форматирование строки
+}
+
+FunctionalExpression::FunctionalExpression(std::string name, std::vector<std::shared_ptr<Expression>> arguments) 
+    : name(name), arguments(std::move(arguments)) {}
+
+
+FunctionalExpression::FunctionalExpression(std::string name) 
+    : name(name), arguments(std::vector<std::shared_ptr<Expression>>()) {}
+
+
+std::shared_ptr<Value> FunctionalExpression::eval() const {
+    std::vector<std::shared_ptr<Value>> values(arguments.size());
+    for (size_t i = 0; i < arguments.size(); ++i) {
+        values[i] = arguments[i]->eval();
+    } 
+    //return Functions::get(name)->execute(values);
+    return Functions::get(name)->execute(values);
+}
+
+std::string FunctionalExpression::toString() const {
+    std::string result;
+    for (const auto& arg : arguments) {
+        result += arg->toString() + ", ";
+    }
+    return name +  "(" + result + ")"; 
+}
+
+void FunctionalExpression::addArgument(std::shared_ptr<Expression> arg) {
+    arguments.push_back(arg);
 }

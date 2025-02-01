@@ -1,61 +1,15 @@
-/*
-word = 2 + 2
-word2 = PI + word
-str = "a" * 5 + "ba" * 7 + "\n"
-print str * "3" * 2
-print "word = " + word + "\n"
-print "word2 = " + word2 + "\n"
-print "1" > "abc"
-print "\n"
-if (1 <= 2) print "1 = 1"
-else print "1 != 1"
-print "\n"
-if (40 < 50 || 50 > 60) {
-    print "true1\n"
-    print "true2\n"
-    i = 0
-}
-else print "false"
-/! ffrfr
-i = 0
-while (i < 10) {
-    print "i = " + i + "\n"
-    if (i == 4) {
-        break
-    }
-    i = i + 1
+a = 10
+b = 1
+c = 7
 
-    if (i == 2) {
-        i = i + 1
-        continue
-    }
-}
-print "\n"
-for (j = 0; j < 10; j = j + 1) {
-    if (j == 4) {
-        continue
-    }
-    print "j = " + j + "\n"
-    
-    if (j == 7) {
-        break
-    }
-}
-k = 0
-do {
-    print "k = " + k + "\n"
-    k = k + 1
-} while (k < 10)
-*/
-
-number = 3
-if (number) {
-    print number
+if (a > b + c) {
+    y = a * a  + b * b + c * c
 } else {
-    print number - 2
+    if (a < b + c) {
+        y = a * a * b  + c * b * b  + 25
+    } else {
+        y = a * a + b + c
+    }
 }
-print "\n"
 
-
-
-
+println(y)

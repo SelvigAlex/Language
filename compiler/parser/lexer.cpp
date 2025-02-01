@@ -80,8 +80,8 @@ void lexer::tokenizeWord() {
         }
         buffer += next();
     }
-    if (buffer == "print") {
-        addToken(tokenType::PRINT);
+    if (buffer == "echo") {
+        addToken(tokenType::ECHO);
     } else if (buffer == "if") {
         addToken(tokenType::IF);
     } else if (buffer == "else") {

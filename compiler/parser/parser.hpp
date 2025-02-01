@@ -37,7 +37,8 @@ private:
     std::shared_ptr<Statement> whileStatement();
     std::shared_ptr<Statement> forStatement();
     std::shared_ptr<Statement> doWhileStatement();
-
+    std::shared_ptr<FunctionalExpression> function();
+    
 
     bool match(tokenType type);
     token consume(tokenType type);

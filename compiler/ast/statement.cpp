@@ -1,6 +1,8 @@
 #include "statement.hpp"
 #include <iostream>
 #include <memory>
+#include "/home/alexs/reverse/compiler/lib/value.hpp"
+
 
 AssigmentStatement::AssigmentStatement(std::string variable, std::shared_ptr<Expression> expression)
     : variable(std::move(variable)), expression(std::move(expression)) {}
@@ -16,16 +18,16 @@ std::string AssigmentStatement::toString() const {
     return variable + " = " + expression->toString();
 }
 
-PrintStatement::PrintStatement(std::shared_ptr<Expression> expression)
+EchoStatement::EchoStatement(std::shared_ptr<Expression> expression)
     : expression(std::move(expression)) {}
 
-void PrintStatement::execute() {
+void EchoStatement::execute() {
     // Печатаем строковое представление результата выражения
     std::cout << expression->eval()->asString();
 }
 
-std::string PrintStatement::toString() const {
-    return "print " + expression->toString();
+std::string EchoStatement::toString() const {
+    return "echo " + expression->toString();
 }
 
 IfStatement::IfStatement(std::shared_ptr<Expression> expression, std::shared_ptr<Statement> ifStatement, std::shared_ptr<Statement> elseStatement)
@@ -146,6 +148,16 @@ std::string ContinueStatement::toString() const {
     return "continue"; 
 }
 
+FunctionStatement::FunctionStatement(std::shared_ptr<FunctionalExpression> function) 
+    : function(std::move(function)) {}
+
+void FunctionStatement::execute() {
+    function->eval(); 
+}
+
+std::string FunctionStatement::toString() const {
+    return function->toString();
+}
 
 
 

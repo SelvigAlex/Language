@@ -32,7 +32,7 @@ enum class tokenType {
     SEMICOLON, // ;
 
     //! keyword
-    PRINT,
+    ECHO,
     IF,
     ELSE,
     WHILE,
