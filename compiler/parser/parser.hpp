@@ -36,6 +36,7 @@ private:
     std::shared_ptr<Statement> statementOrBlock();
     std::shared_ptr<Statement> whileStatement();
     std::shared_ptr<Statement> forStatement();
+    std::shared_ptr<Statement> doWhileStatement();
 
 
     bool match(tokenType type);

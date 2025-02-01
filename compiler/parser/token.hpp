@@ -37,6 +37,10 @@ enum class tokenType {
     ELSE,
     WHILE,
     FOR,
+    DO,
+    BREAK,
+    CONTINUE,
+    
 
     EOF_     // end of file
 };

@@ -90,6 +90,12 @@ void lexer::tokenizeWord() {
         addToken(tokenType::WHILE);
     } else if (buffer == "for") {
         addToken(tokenType::FOR);
+    } else if (buffer == "do") {
+        addToken(tokenType::DO);
+    } else if (buffer == "break") {
+        addToken(tokenType::BREAK);
+    } else if (buffer == "continue") {
+        addToken(tokenType::CONTINUE);
     } else {
         addToken(tokenType::WORD, buffer);
     }

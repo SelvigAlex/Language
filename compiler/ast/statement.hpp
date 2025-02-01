@@ -61,9 +61,6 @@ class WhileStatement : public Statement {
 private:
     std::shared_ptr<Expression> condition;
     std::shared_ptr<Statement> statement;
-
-
-    
 public:
     explicit WhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement);
     void execute() override;
@@ -71,17 +68,44 @@ public:
 };
 
 
+class DoWhileStatement : public Statement {
+private:
+    std::shared_ptr<Expression> condition;
+    std::shared_ptr<Statement> statement;
+public:
+    explicit DoWhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement);
+    void execute() override;
+    std::string toString() const override;
+};
+
 class ForStatement : public Statement {
 private:
     std::shared_ptr<Statement> initialization;
     std::shared_ptr<Expression> termination;
     std::shared_ptr<Statement> increment;
     std::shared_ptr<Statement> statement;
-
-
-    
 public:
     explicit ForStatement(std::shared_ptr<Statement> initialization, std::shared_ptr<Expression> termination, std::shared_ptr<Statement> increment, std::shared_ptr<Statement> statement);
+    void execute() override;
+    std::string toString() const override;
+};
+
+
+class BreakStatement : public Statement, std::exception{
+private:
+
+public:
+    ~BreakStatement() noexcept = default;
+    void execute() override;
+    std::string toString() const override;
+};
+
+
+class ContinueStatement : public Statement, std::exception{
+private:
+
+public:
+    ~ContinueStatement() noexcept = default;
     void execute() override;
     std::string toString() const override;
 };

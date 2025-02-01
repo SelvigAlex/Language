@@ -73,7 +73,13 @@ WhileStatement::WhileStatement(std::shared_ptr<Expression> condition, std::share
 
 void WhileStatement::execute() {
     while (condition->eval()->asNumber()) {
-        statement->execute();
+        try {
+            statement->execute();
+        } catch (BreakStatement* bs) {
+            break;
+        } catch (ContinueStatement* bs) {
+            continue;
+        }
     }
 }
 
@@ -81,18 +87,65 @@ std::string WhileStatement::toString() const {
     return "while " + condition->toString() + " " + statement->toString();
 }
 
+void DoWhileStatement::execute() {
+    do {
+        try {
+            statement->execute();
+        } catch (BreakStatement* bs) {
+            break;
+        } catch (ContinueStatement* bs) {
+            continue;
+        }
+    } while (condition->eval()->asNumber());
+}
+
+std::string DoWhileStatement::toString() const {
+    return "do " + statement->toString() + " while " + condition->toString();
+}
+
+
+DoWhileStatement::DoWhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement) 
+    : condition(std::move(condition)), statement(std::move(statement)) {}
+
+
+
+
 ForStatement::ForStatement(std::shared_ptr<Statement> initialization, std::shared_ptr<Expression> termination, std::shared_ptr<Statement> increment, std::shared_ptr<Statement> statement) 
     : initialization(std::move(initialization)), termination(std::move(termination)), increment(std::move(increment)), statement(std::move(statement)) {}
 
 void ForStatement::execute() {
     for (initialization->execute(); termination->eval()->asNumber(); increment->execute()) {
-        statement->execute();
+        try {
+            statement->execute();
+        } catch (BreakStatement* bs) {
+            break;
+        } catch (ContinueStatement* bs) {
+            continue;
+        }
     }
 }
+
 
 std::string ForStatement::toString() const {
     return "for " + initialization->toString() + "; " + termination->toString() + "; " + increment->toString() + statement->toString();
 }
+
+void BreakStatement::execute() {
+    throw this;
+}
+
+std::string BreakStatement::toString() const { 
+    return "break"; 
+}
+
+void ContinueStatement::execute() {
+    throw this;
+}
+
+std::string ContinueStatement::toString() const { 
+    return "continue"; 
+}
+
 
 
 

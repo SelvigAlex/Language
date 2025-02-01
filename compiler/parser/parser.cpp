@@ -5,7 +5,7 @@
 
 const token parser::EOF_TOKEN = token(tokenType::EOF_, "");
 
-parser::parser(const std::vector<token> &tokens) : tokens(tokens), pos(0) {}
+parser::parser(const std::vector<token>& tokens) : tokens(tokens), pos(0) {}
 
 std::shared_ptr<Statement> parser::parse() {
   std::shared_ptr<BlockStatement> result = std::make_shared<BlockStatement>();
@@ -38,16 +38,16 @@ std::shared_ptr<Expression> parser::conditional() {
   while (true) {
     if (match(tokenType::LT)) {
       result = std::make_shared<ConditionalExpression>(
-          ConditionalExpression::Operator::LT, std::move(result), additive());
+        ConditionalExpression::Operator::LT, std::move(result), additive());
     } else if (match(tokenType::LTEQ)) {
       result = std::make_shared<ConditionalExpression>(
-          ConditionalExpression::Operator::LTEQ, std::move(result), additive());
+        ConditionalExpression::Operator::LTEQ, std::move(result), additive());
     } else if (match(tokenType::GT)) {
       result = std::make_shared<ConditionalExpression>(
-          ConditionalExpression::Operator::GT, std::move(result), additive());
+        ConditionalExpression::Operator::GT, std::move(result), additive());
     } else if (match(tokenType::GTEQ)) {
       result = std::make_shared<ConditionalExpression>(
-          ConditionalExpression::Operator::GTEQ, std::move(result), additive());
+        ConditionalExpression::Operator::GTEQ, std::move(result), additive());
     } else {
       break;
     }
@@ -60,7 +60,7 @@ std::shared_ptr<Expression> parser::logicalOr() {
   while (true) {
     if (match(tokenType::BARBAR)) {
       result = std::make_shared<ConditionalExpression>(
-          ConditionalExpression::Operator::OR, std::move(result), logicalAnd());
+        ConditionalExpression::Operator::OR, std::move(result), logicalAnd());
       continue;
     }
     break;
@@ -73,7 +73,7 @@ std::shared_ptr<Expression> parser::logicalAnd() {
   while (true) {
     if (match(tokenType::AMPAMP)) {
       result = std::make_shared<ConditionalExpression>(
-          ConditionalExpression::Operator::AND, std::move(result), equality());
+        ConditionalExpression::Operator::AND, std::move(result), equality());
       continue;
     }
     break;
@@ -85,12 +85,12 @@ std::shared_ptr<Expression> parser::equality() {
   std::shared_ptr<Expression> result = conditional();
   if (match(tokenType::EQEQ)) {
     return std::make_shared<ConditionalExpression>(
-        ConditionalExpression::Operator::EQUALS, std::move(result),
-        conditional());
+      ConditionalExpression::Operator::EQUALS, std::move(result),
+      conditional());
   } else if (match(tokenType::EXCLEQ)) {
     return std::make_shared<ConditionalExpression>(
-        ConditionalExpression::Operator::NOT_EQUALS, std::move(result),
-        conditional());
+      ConditionalExpression::Operator::NOT_EQUALS, std::move(result),
+      conditional());
   }
   return result;
 }
@@ -104,6 +104,15 @@ std::shared_ptr<Statement> parser::statement() {
   }
   if (match(tokenType::WHILE)) {
     return whileStatement();
+  }
+  if (match(tokenType::DO)) {
+    return doWhileStatement();
+  }
+  if (match(tokenType::BREAK)) {
+    return std::make_shared<BreakStatement>();
+  }
+  if (match(tokenType::CONTINUE)) {
+    return std::make_shared<ContinueStatement>();
   }
   if (match(tokenType::FOR)) {
     return forStatement();
@@ -119,7 +128,7 @@ std::shared_ptr<Statement> parser::assigmentStatement() {
     return std::make_shared<AssigmentStatement>(variable, expression());
   }
   throw std::runtime_error("Invalid assignment statement: token " +
-                           current.getLexeme() + " doesn't match");
+    current.getLexeme() + " doesn't match");
 }
 
 std::shared_ptr<Statement> parser::ifElse() {
@@ -141,6 +150,13 @@ std::shared_ptr<Statement> parser::whileStatement() {
   return std::make_shared<WhileStatement>(condition, statement);
 }
 
+std::shared_ptr<Statement> parser::doWhileStatement() {
+  std::shared_ptr<Statement> statement = statementOrBlock();
+  consume(tokenType::WHILE);
+  std::shared_ptr<Expression> condition = expression();
+  return std::make_shared<DoWhileStatement>(condition, statement);
+}
+
 std::shared_ptr<Statement> parser::forStatement() {
   consume(tokenType::LPAREN);
   std::shared_ptr<Statement> initialization = assigmentStatement();
@@ -150,19 +166,16 @@ std::shared_ptr<Statement> parser::forStatement() {
   std::shared_ptr<Statement> increment = assigmentStatement();
   consume(tokenType::RPAREN);
   std::shared_ptr<Statement> statement = statementOrBlock();
-  return std::make_shared<ForStatement>(initialization, termination, increment,
-                                        statement);
+  return std::make_shared<ForStatement>(initialization, termination, increment, statement);
 }
 
 std::shared_ptr<Expression> parser::additive() {
   auto result = multiplicative();
   while (true) {
     if (match(tokenType::PLUS)) {
-      result = std::make_shared<BinaryExpression>('+', std::move(result),
-                                                  multiplicative());
+      result = std::make_shared<BinaryExpression>('+', std::move(result), multiplicative());
     } else if (match(tokenType::MINUS)) {
-      result = std::make_shared<BinaryExpression>('-', std::move(result),
-                                                  multiplicative());
+      result = std::make_shared<BinaryExpression>('-', std::move(result), multiplicative());
     } else {
       break;
     }
@@ -176,10 +189,10 @@ std::shared_ptr<Expression> parser::multiplicative() {
   while (true) {
     if (match(tokenType::STAR)) {
       result =
-          std::make_shared<BinaryExpression>('*', std::move(result), unary());
+        std::make_shared<BinaryExpression>('*', std::move(result), unary());
     } else if (match(tokenType::SLASH)) {
       result =
-          std::make_shared<BinaryExpression>('/', std::move(result), unary());
+        std::make_shared<BinaryExpression>('/', std::move(result), unary());
     } else {
       break;
     }
@@ -199,13 +212,13 @@ std::shared_ptr<Expression> parser::unary() {
 }
 
 std::shared_ptr<Expression> parser::primary() {
-  const auto &current = get(0);
+  const auto& current = get(0);
   if (match(tokenType::NUMBER)) {
     return std::make_shared<ValueExpression>(std::stod(current.getLexeme()));
   }
   if (match(tokenType::HEX_NUMBER)) {
     return std::make_shared<ValueExpression>(
-        std::stoul(current.getLexeme(), nullptr, 16));
+      std::stoul(current.getLexeme(), nullptr, 16));
   }
   if (match(tokenType::WORD)) {
     return std::make_shared<VariableExpression>(current.getLexeme());
@@ -213,6 +226,9 @@ std::shared_ptr<Expression> parser::primary() {
   if (match(tokenType::TEXT)) {
     return std::make_shared<ValueExpression>(current.getLexeme());
   }
+  // if (get(0).getTokenType() == tokenType::WORD &&  get(1).getTokenType() == tokenType::LPAREN) {
+  //   throw std::runtime_error("qwerty");
+  // }
   if (match(tokenType::LPAREN)) {
     auto result = expression();
     consume(tokenType::RPAREN);
@@ -223,7 +239,7 @@ std::shared_ptr<Expression> parser::primary() {
 }
 
 bool parser::match(tokenType type) {
-  const auto &current = get(0);
+  const auto& current = get(0);
   if (type != current.getTokenType())
     return false;
   pos++;
@@ -231,16 +247,16 @@ bool parser::match(tokenType type) {
 }
 
 token parser::consume(tokenType type) {
-  const auto &current = get(0);
+  const auto& current = get(0);
   if (type != current.getTokenType()) {
     throw std::runtime_error("Expected token " + toString(type) + ", but got " +
-                             current.getLexeme());
+      current.getLexeme());
   }
   pos++;
   return current;
 }
 
-const token &parser::get(int relativePosition) {
+const token& parser::get(int relativePosition) {
   size_t position = pos + relativePosition;
   if (position >= tokens.size())
     return EOF_TOKEN;
