@@ -1,15 +1,15 @@
-a = 10
-b = 1
-c = 7
+a = 2
+println(a)
 
-if (a > b + c) {
-    y = a * a  + b * b + c * c
+if (a > 1) {
+    println(a + 2)
 } else {
-    if (a < b + c) {
-        y = a * a * b  + c * b * b  + 25
-    } else {
-        y = a * a + b + c
-    }
+    println(a - 2)
 }
 
-println(y)
+i = 0
+while (1) {
+    println(i)
+    i = i + 1
+    if (i == 10) break
+}

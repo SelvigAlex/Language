@@ -40,6 +40,8 @@ enum class tokenType {
     DO,
     BREAK,
     CONTINUE,
+    FUNCTION,
+    RETURN,
     
 
     EOF_     // end of file

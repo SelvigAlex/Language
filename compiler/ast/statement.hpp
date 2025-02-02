@@ -91,8 +91,6 @@ public:
 
 
 class BreakStatement : public Statement, std::exception{
-private:
-
 public:
     ~BreakStatement() noexcept = default;
     void execute() override;
@@ -101,11 +99,23 @@ public:
 
 
 class ContinueStatement : public Statement, std::exception{
-private:
-
 public:
     ~ContinueStatement() noexcept = default;
     void execute() override;
+    std::string toString() const override;
+};
+
+
+class ReturnStatement : public Statement, std::exception {
+private:
+    std::shared_ptr<Expression> expression;
+    std::shared_ptr<Value> result;
+
+public:
+    explicit ReturnStatement(std::shared_ptr<Expression> expression);
+    ~ReturnStatement() noexcept = default;
+    void execute() override;
+    std::shared_ptr<Value> getResult();
     std::string toString() const override;
 };
 
@@ -115,6 +125,19 @@ private:
 
 public:
     explicit FunctionStatement(std::shared_ptr<FunctionalExpression> function);
+    void execute() override;
+    std::string toString() const override;
+};
+
+
+class FunctionDefine : public Statement {
+private:
+    std::string name;
+    std::vector<std::string> argNames;
+    std::shared_ptr<Statement> body;
+
+public:
+    explicit FunctionDefine(const std::string& name, const std::vector<std::string>& argNames, std::shared_ptr<Statement> body);
     void execute() override;
     std::string toString() const override;
 };

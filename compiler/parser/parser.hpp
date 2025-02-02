@@ -38,6 +38,8 @@ private:
     std::shared_ptr<Statement> forStatement();
     std::shared_ptr<Statement> doWhileStatement();
     std::shared_ptr<FunctionalExpression> function();
+    std::shared_ptr<FunctionDefine> functionDefine();
+
     
 
     bool match(tokenType type);

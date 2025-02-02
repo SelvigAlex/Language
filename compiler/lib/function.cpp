@@ -8,6 +8,33 @@
 #include <iostream>
 
 
+
+
+UserDefineFunction::UserDefineFunction(const std::vector<std::string>& argNames, std::shared_ptr<Statement> body)
+    : argNames(argNames), body(std::move(body)) {}
+
+std::shared_ptr<Value> UserDefineFunction::execute(const std::vector<std::shared_ptr<Value>>& args) const {
+    double a = args.size() - args.size();
+    try {
+        body->execute();
+        return std::make_shared<NumberValue>(a);
+    } catch (ReturnStatement* rt) {
+        return rt->getResult();
+    }
+}
+
+size_t UserDefineFunction::getArgsCount() const {
+    return argNames.size();
+}
+
+std::string UserDefineFunction::getAgrsName(size_t index) const {
+    if (index > argNames.size()) {
+        return "";
+    }
+    return argNames[index];
+}
+
+
 std::unordered_map<std::string, std::shared_ptr<Function>> Functions::functions = {
     {"sin", std::make_shared<FunctionSin>(FunctionSin())},
     {"cos", std::make_shared<FunctionCos>(FunctionCos())},
@@ -63,3 +90,4 @@ std::shared_ptr<Value> FunctionPrint::execute(const std::vector<std::shared_ptr<
     }
     return std::make_shared<NumberValue>(0.);
 }
+

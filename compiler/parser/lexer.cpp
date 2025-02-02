@@ -96,7 +96,12 @@ void lexer::tokenizeWord() {
         addToken(tokenType::BREAK);
     } else if (buffer == "continue") {
         addToken(tokenType::CONTINUE);
-    } else {
+    } else if (buffer == "function") {
+        addToken(tokenType::FUNCTION);
+    } else if (buffer == "return") {
+        addToken(tokenType::RETURN);
+    } 
+    else {
         addToken(tokenType::WORD, buffer);
     }
 }

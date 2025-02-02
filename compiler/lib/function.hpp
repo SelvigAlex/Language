@@ -2,12 +2,25 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
-
+#include "/home/alexs/reverse/compiler/ast/statement.hpp"
 
 class Function {
 public:
     virtual ~Function() = default;                 // Виртуальный деструктор
     virtual std::shared_ptr<Value> execute(const std::vector<std::shared_ptr<Value>>& args) const = 0; // Чисто виртуальная функция для вычисления значения
+};
+
+class UserDefineFunction : public Function {
+private:
+    std::vector<std::string> argNames;
+    std::shared_ptr<Statement> body;
+
+
+public:
+    explicit UserDefineFunction(const std::vector<std::string>& argNames, std::shared_ptr<Statement> body);
+    std::shared_ptr<Value> execute(const std::vector<std::shared_ptr<Value>>& args) const;
+    size_t getArgsCount() const;
+    std::string getAgrsName(size_t index) const;
 };
 
 class FunctionSin : public Function {

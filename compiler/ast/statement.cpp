@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include "/home/alexs/reverse/compiler/lib/value.hpp"
+#include "/home/alexs/reverse/compiler/lib/function.hpp"
 
 
 AssigmentStatement::AssigmentStatement(std::string variable, std::shared_ptr<Expression> expression)
@@ -79,7 +80,7 @@ void WhileStatement::execute() {
             statement->execute();
         } catch (BreakStatement* bs) {
             break;
-        } catch (ContinueStatement* bs) {
+        } catch (ContinueStatement* cn) {
             continue;
         }
     }
@@ -95,7 +96,7 @@ void DoWhileStatement::execute() {
             statement->execute();
         } catch (BreakStatement* bs) {
             break;
-        } catch (ContinueStatement* bs) {
+        } catch (ContinueStatement* cn) {
             continue;
         }
     } while (condition->eval()->asNumber());
@@ -121,7 +122,7 @@ void ForStatement::execute() {
             statement->execute();
         } catch (BreakStatement* bs) {
             break;
-        } catch (ContinueStatement* bs) {
+        } catch (ContinueStatement* cn) {
             continue;
         }
     }
@@ -159,5 +160,33 @@ std::string FunctionStatement::toString() const {
     return function->toString();
 }
 
+FunctionDefine::FunctionDefine(const std::string &name, const std::vector<std::string> &argNames, std::shared_ptr<Statement> body)
+    : name(name), argNames(argNames), body(std::move(body)) {}
 
+void FunctionDefine::execute() {
+    Functions::set(name, std::make_shared<UserDefineFunction>(argNames, body));
+}
 
+std::string FunctionDefine::toString() const {
+    std::string result;
+    for (const auto& name : argNames) {
+        result += name;
+    }
+    return "function (" + result + ")" + body->toString();
+}
+
+ReturnStatement::ReturnStatement(std::shared_ptr<Expression> expression) 
+    : expression(std::move(expression)) {}
+
+void ReturnStatement::execute() {
+    result = expression->eval();
+    throw this;
+}
+
+std::shared_ptr<Value> ReturnStatement::getResult() {
+    return result;
+}
+
+std::string ReturnStatement::toString() const {
+    return "return";
+}

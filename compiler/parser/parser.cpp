@@ -31,6 +31,20 @@ std::shared_ptr<Statement> parser::statementOrBlock() {
   return statement();
 }
 
+
+std::shared_ptr<FunctionDefine> parser::functionDefine() {
+  std::string name = consume(tokenType::WORD).getLexeme();
+  consume(tokenType::LPAREN);
+  std::vector<std::string> argNames;
+  while (!match(tokenType::RPAREN)) {
+    argNames.push_back(consume(tokenType::WORD).getLexeme());
+    match(tokenType::SEMICOLON);
+  }
+  std::shared_ptr<Statement> body = statementOrBlock();
+  return std::make_shared<FunctionDefine>(name, argNames, body);
+}
+
+
 std::shared_ptr<FunctionalExpression> parser::function() {
   std::string name = consume(tokenType::WORD).getLexeme();
   consume(tokenType::LPAREN);
@@ -41,6 +55,7 @@ std::shared_ptr<FunctionalExpression> parser::function() {
   }
   return function;
 }
+
 
 std::shared_ptr<Expression> parser::expression() { return logicalOr(); }
 
@@ -129,8 +144,14 @@ std::shared_ptr<Statement> parser::statement() {
   if (match(tokenType::CONTINUE)) {
     return std::make_shared<ContinueStatement>();
   }
+  if (match(tokenType::RETURN)) {
+    return std::make_shared<ReturnStatement>(expression());
+  }
   if (match(tokenType::FOR)) {
     return forStatement();
+  }
+  if (match(tokenType::FUNCTION)) {
+    return functionDefine();
   }
   return assigmentStatement();
 }
@@ -336,6 +357,8 @@ std::string parser::toString(tokenType type) const {
     return "RPAREN";
   case tokenType::BARBAR:
     return "RPAREN";
+  case tokenType::FUNCTION:
+    return "FUNCTION";
   case tokenType::EOF_:
     return "EOF";
   default:

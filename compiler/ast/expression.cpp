@@ -173,8 +173,16 @@ std::shared_ptr<Value> FunctionalExpression::eval() const {
     for (size_t i = 0; i < arguments.size(); ++i) {
         values[i] = arguments[i]->eval();
     } 
-    //return Functions::get(name)->execute(values);
-    return Functions::get(name)->execute(values);
+    std::shared_ptr<Function> function = Functions::get(name);
+   
+    std::shared_ptr<UserDefineFunction> userFunction = std::dynamic_pointer_cast<UserDefineFunction>(function);
+    if (userFunction) {
+        if (arguments.size() != userFunction->getArgsCount()) throw std::runtime_error("Arguments count mismatch");
+        for (size_t i = 0; i < arguments.size(); ++i) {
+            Variables::set(userFunction->getAgrsName(i), values[i]);
+        }
+    }
+    return function->execute(values);
 }
 
 std::string FunctionalExpression::toString() const {
