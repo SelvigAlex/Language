@@ -141,3 +141,17 @@ public:
     void execute() override;
     std::string toString() const override;
 };
+
+class ArrayAssigmentStatement : public Statement {
+private:
+    std::string variable;
+    std::shared_ptr<Expression> index;
+    std::shared_ptr<Expression> expression;
+public:
+    explicit ArrayAssigmentStatement(const std::string& variable, std::shared_ptr<Expression> index, std::shared_ptr<Expression> expression);
+    void execute() override;
+    std::string toString() const override;
+
+
+
+};

@@ -21,6 +21,8 @@ enum class tokenType {
     RPAREN, // )
     LBRACE, // {
     RBRACE, // }
+    LBRACKET, // [
+    RBRACKET, // ]
     LT,     // <
     LTEQ,   // <=
     GT,     // >
@@ -30,6 +32,7 @@ enum class tokenType {
     BAR,    // |
     BARBAR, // ||
     SEMICOLON, // ;
+    COMMA, // ,
 
     //! keyword
     ECHO,

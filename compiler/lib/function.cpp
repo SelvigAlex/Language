@@ -1,4 +1,5 @@
 #include "function.hpp"
+#include <memory>
 #include <stdexcept>
 #include <unordered_map>
 #include <cmath>
@@ -40,7 +41,7 @@ std::unordered_map<std::string, std::shared_ptr<Function>> Functions::functions 
     {"cos", std::make_shared<FunctionCos>(FunctionCos())},
     {"println", std::make_shared<FunctionPrintLn>(FunctionPrintLn())},
     {"print", std::make_shared<FunctionPrint>(FunctionPrint())},
-
+    {"createArray", std::make_shared<FunctionCreateArray>(FunctionCreateArray())},
 };
 
 std::shared_ptr<Function> Functions::get(const std::string& key) {
@@ -91,3 +92,6 @@ std::shared_ptr<Value> FunctionPrint::execute(const std::vector<std::shared_ptr<
     return std::make_shared<NumberValue>(0.);
 }
 
+std::shared_ptr<Value> FunctionCreateArray::execute(const std::vector<std::shared_ptr<Value>>& args) const {
+    return std::make_shared<ArrayValue>(args);
+}

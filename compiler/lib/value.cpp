@@ -1,9 +1,14 @@
 #include "value.hpp"
+#include <memory>
 #include <stdexcept>
+#include <vector>
+#include <string>
 
 // Реализация методов класса NumberValue
 
 NumberValue::NumberValue(double value) : value(value) {}
+
+NumberValue::NumberValue(int value) : value(value) {}
 
 NumberValue::NumberValue(bool value) {
     this->value = value ? 1 : 0;
@@ -44,4 +49,42 @@ std::string StringValue::asString() const {
 
 std::string StringValue::toString() const {
     return asString(); // Используем `asString` для строкового представления
+}
+
+ArrayValue::ArrayValue(size_t size) {
+    elements.resize(size);
+}
+
+ArrayValue::ArrayValue(const std::vector<std::shared_ptr<Value>>& newElements) {
+    this->elements = newElements;
+}
+
+ArrayValue::ArrayValue(ArrayValue const& newArray) {
+    this->elements = newArray.elements;
+}
+
+double ArrayValue::asNumber() const {
+    throw std::runtime_error("Cannot cast array to number");
+}
+
+std::string ArrayValue::asString() const {
+    std::string result = "[ ";
+    for (const auto& elem : elements) {
+        result += elem->toString() + " ";
+    }
+    return result + "]";
+}
+
+std::string ArrayValue::toString() const {
+    return asString();
+}
+
+std::shared_ptr<Value> ArrayValue::get(size_t index) const {
+    if (index >= elements.size()) throw std::runtime_error("Out-of-range array");
+    return elements[index];
+}
+
+void ArrayValue::set(size_t index, std::shared_ptr<Value> value) {
+    if (index >= elements.size()) throw std::runtime_error("Out-of-range array");
+    elements[index] = value;
 }

@@ -99,11 +99,29 @@ private:
     std::string name;
     std::vector<std::shared_ptr<Expression>> arguments;
 
-
 public:
     explicit FunctionalExpression(std::string name, std::vector<std::shared_ptr<Expression>> arguments);
     explicit FunctionalExpression(std::string name);
     std::shared_ptr<Value> eval() const override;
     std::string toString() const override;
     void addArgument(std::shared_ptr<Expression> arg);
+};
+
+class ArrayAccessExpression : public Expression {
+private:
+    std::string variable;
+    std::shared_ptr<Expression> index;
+public:
+    explicit ArrayAccessExpression(const std::string& variable, std::shared_ptr<Expression> index);
+    std::shared_ptr<Value> eval() const override;
+    std::string toString() const override;
+};
+
+class ArrayExpression : public Expression {
+private:
+    std::vector<std::shared_ptr<Expression>> elements;
+public:
+    explicit ArrayExpression(std::vector<std::shared_ptr<Expression>>& elements);
+    std::shared_ptr<Value> eval() const override;
+    std::string toString() const override;
 };

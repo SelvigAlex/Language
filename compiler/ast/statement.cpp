@@ -190,3 +190,25 @@ std::shared_ptr<Value> ReturnStatement::getResult() {
 std::string ReturnStatement::toString() const {
     return "return";
 }
+
+ArrayAssigmentStatement::ArrayAssigmentStatement(const std::string& variable, std::shared_ptr<Expression> index, std::shared_ptr<Expression> expression) 
+    : variable(variable), index(std::move(index)), expression(std::move(expression)) {}
+
+void ArrayAssigmentStatement::execute() {
+    std::shared_ptr<Value> var = Variables::get(variable);
+    std::shared_ptr<ArrayValue> array = std::dynamic_pointer_cast<ArrayValue>(var);
+    if (array) {
+        array->set((int)index->eval()->asNumber(), expression->eval());
+    } else {
+        throw std::runtime_error("Array expected");
+    }
+}
+
+std::string ArrayAssigmentStatement::toString() const {
+    std::string result;
+    return variable + "[" + index->toString() + "] = " + expression->toString();
+}
+
+
+
+

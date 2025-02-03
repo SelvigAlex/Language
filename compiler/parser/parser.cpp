@@ -56,6 +56,24 @@ std::shared_ptr<FunctionalExpression> parser::function() {
   return function;
 }
 
+std::shared_ptr<Expression> parser::element() {
+  std::string variable = consume(tokenType::WORD).getLexeme();
+  consume(tokenType::LBRACKET);
+  std::shared_ptr<Expression> index = expression();
+  consume(tokenType::RBRACKET);
+  return std::make_shared<ArrayAccessExpression>(variable, index);
+}
+
+std::shared_ptr<Expression> parser::array() {
+  consume(tokenType::LBRACKET);
+  std::vector<std::shared_ptr<Expression>> elements;
+  while (!match(tokenType::RBRACKET)) {
+    elements.push_back(expression());
+    match(tokenType::SEMICOLON);
+  }
+  return std::make_shared<ArrayExpression>(elements);
+}
+
 
 std::shared_ptr<Expression> parser::expression() { return logicalOr(); }
 
@@ -157,14 +175,21 @@ std::shared_ptr<Statement> parser::statement() {
 }
 
 std::shared_ptr<Statement> parser::assigmentStatement() {
-  auto current = get(0);
-  if (match(tokenType::WORD) && get(0).getTokenType() == tokenType::EQ) {
-    std::string variable = current.getLexeme();
+  //auto current = get(0);
+  if (lookMatch(0, tokenType::WORD) && lookMatch(1, tokenType::EQ)) {
+    std::string variable = consume(tokenType::WORD).getLexeme();
     consume(tokenType::EQ);
     return std::make_shared<AssigmentStatement>(variable, expression());
   }
-  throw std::runtime_error("Invalid assignment statement: token " +
-    current.getLexeme() + " doesn't match");
+  if (lookMatch(0, tokenType::WORD) && lookMatch(1, tokenType::LBRACKET)) {
+    std::string variable = consume(tokenType::WORD).getLexeme();
+    consume(tokenType::LBRACKET);
+    std::shared_ptr<Expression> index = expression();
+    consume(tokenType::RBRACKET);
+    consume(tokenType::EQ);
+    return std::make_shared<ArrayAssigmentStatement>(variable, index, expression());
+  }
+  throw std::runtime_error("Invalid assignment statement: token " + get(0).getLexeme() + " doesn't match");
 }
 
 std::shared_ptr<Statement> parser::ifElse() {
@@ -255,8 +280,14 @@ std::shared_ptr<Expression> parser::primary() {
   if (match(tokenType::HEX_NUMBER)) {
     return std::make_shared<ValueExpression>(std::stoul(current.getLexeme(), nullptr, 16));
   }
-  if (current.getTokenType() == tokenType::WORD &&  get(1).getTokenType() == tokenType::LPAREN) {
+  if (lookMatch(0, tokenType::WORD) &&  lookMatch(1, tokenType::LPAREN)) {
     return function();
+  }
+  if (lookMatch(0, tokenType::WORD) &&  lookMatch(1, tokenType::LBRACKET)) {
+    return element();
+  }
+  if (lookMatch(0, tokenType::LBRACKET)){
+    return array();
   }
   if (match(tokenType::WORD)) {
     return std::make_shared<VariableExpression>(current.getLexeme());
@@ -296,6 +327,10 @@ const token& parser::get(int relativePosition) {
     return EOF_TOKEN;
   return tokens[position];
 }
+
+bool parser::lookMatch(int pos, tokenType type) {
+  return get(pos).getTokenType() == type;
+} 
 
 std::string parser::toString(tokenType type) const {
   switch (type) {

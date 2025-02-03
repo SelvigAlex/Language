@@ -48,6 +48,12 @@ public:
     std::shared_ptr<Value> execute(const std::vector<std::shared_ptr<Value>>& args) const override;
 };
 
+class FunctionCreateArray : public Function {
+public:
+    explicit FunctionCreateArray() = default;
+    std::shared_ptr<Value> execute(const std::vector<std::shared_ptr<Value>>& args) const override;
+};
+
 
 class Functions {
 public:

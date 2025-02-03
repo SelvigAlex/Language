@@ -10,6 +10,8 @@ const std::unordered_map<std::string, tokenType> lexer::OPERATORS = {
     {")", tokenType::RPAREN},
     {"{", tokenType::LBRACE},
     {"}", tokenType::RBRACE},
+    {"[", tokenType::LBRACKET},
+    {"]", tokenType::RBRACKET},
     {"=", tokenType::EQ},
     {"<", tokenType::LT},
     {">", tokenType::GT},
@@ -26,7 +28,7 @@ const std::unordered_map<std::string, tokenType> lexer::OPERATORS = {
 
 };
 
-const std::string lexer::OPERATOR_CHARS = "+-*/(){}=<>!&|;";
+const std::string lexer::OPERATOR_CHARS = "+-*/(){}[]=<>!&|;";
 
 char lexer::next() {
     return (position < code.size()) ? code[position++] : '\0';

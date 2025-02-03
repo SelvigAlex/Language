@@ -25,7 +25,7 @@ std::shared_ptr<Value> BinaryExpression::eval() const {
     std::shared_ptr<Value> value1 = expr1->eval();
     std::shared_ptr<Value> value2 = expr2->eval();
 
-    if (dynamic_cast<StringValue*>(value1.get())) {
+    if ((dynamic_cast<StringValue*>(value1.get())) || dynamic_cast<ArrayValue*>(value1.get())) {
         std::string string1 = value1->asString();
         if (operation == '*') {
             int iterations = static_cast<int>(value2->asNumber());
@@ -39,8 +39,8 @@ std::shared_ptr<Value> BinaryExpression::eval() const {
         }
     }
 
-    double number1 = value1->asNumber();
-    double number2 = value2->asNumber();
+    int number1 = value1->asNumber();
+    int number2 = value2->asNumber();
 
     switch (operation) {
     case '-':
@@ -195,4 +195,41 @@ std::string FunctionalExpression::toString() const {
 
 void FunctionalExpression::addArgument(std::shared_ptr<Expression> arg) {
     arguments.push_back(arg);
+}
+
+ArrayAccessExpression::ArrayAccessExpression(const std::string& variable, std::shared_ptr<Expression> index)
+    : variable(variable), index(std::move(index)) {}
+
+std::shared_ptr<Value> ArrayAccessExpression::eval() const {
+     std::shared_ptr<Value> var = Variables::get(variable);
+    std::shared_ptr<ArrayValue> array = std::dynamic_pointer_cast<ArrayValue>(var);
+    if (array) {
+        return array->get((int)index->eval()->asNumber());
+    } else {
+        throw std::runtime_error("Array expected");
+    }
+}
+
+std::string ArrayAccessExpression::toString() const {
+    return variable + "[" + index->toString() + "]";
+
+}
+
+ArrayExpression::ArrayExpression(std::vector<std::shared_ptr<Expression>>& elements) 
+    : elements(elements) {}
+
+std::shared_ptr<Value> ArrayExpression::eval() const {
+    std::shared_ptr<ArrayValue> array = std::make_shared<ArrayValue>(elements.size());
+    for (size_t i= 0; i < elements.size(); ++i) {
+        array->set(i, elements[i]->eval());
+    }
+    return array;
+}
+
+std::string ArrayExpression::toString() const {
+    std::string result;
+    for (const auto& elem : elements) {
+        result += elem->toString() + ' ';
+    }
+    return result;
 }

@@ -39,10 +39,13 @@ private:
     std::shared_ptr<Statement> doWhileStatement();
     std::shared_ptr<FunctionalExpression> function();
     std::shared_ptr<FunctionDefine> functionDefine();
+    std::shared_ptr<Expression> element();
+    std::shared_ptr<Expression> array();
 
     
 
     bool match(tokenType type);
+    bool lookMatch(int pos, tokenType type);
     token consume(tokenType type);
     const token& get(int relativePosition);
     std::string toString(tokenType type) const;
