@@ -49,11 +49,12 @@ public:
 };
 
 class FunctionCreateArray : public Function {
+private:
+    std::shared_ptr<ArrayValue> createArray(const std::vector<std::shared_ptr<Value>>& args, size_t index) const;
 public:
     explicit FunctionCreateArray() = default;
     std::shared_ptr<Value> execute(const std::vector<std::shared_ptr<Value>>& args) const override;
 };
-
 
 class Functions {
 public:
@@ -67,7 +68,5 @@ public:
 private:
     // Контейнер для хранения переменных
     static std::unordered_map<std::string, std::shared_ptr<Function>> functions;
-
-    
 };
 

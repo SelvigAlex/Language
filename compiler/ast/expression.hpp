@@ -44,6 +44,7 @@ public:
         MINUS,
         MULTIPLY,
         DIVIDE,
+        PERCENT,
 
         EQUALS,
         NOT_EQUALS,
@@ -110,10 +111,15 @@ public:
 class ArrayAccessExpression : public Expression {
 private:
     std::string variable;
-    std::shared_ptr<Expression> index;
+    std::vector<std::shared_ptr<Expression>> indices;
+
+    std::shared_ptr<ArrayValue> consumeArray(std::shared_ptr<Value> var) const;
+    size_t index(size_t index) const;
 public:
-    explicit ArrayAccessExpression(const std::string& variable, std::shared_ptr<Expression> index);
+    explicit ArrayAccessExpression(const std::string& variable, const std::vector<std::shared_ptr<Expression>>& indices);
     std::shared_ptr<Value> eval() const override;
+    std::shared_ptr<ArrayValue> getArray() const;
+    size_t lastIndex() const;
     std::string toString() const override;
 };
 

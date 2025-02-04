@@ -90,7 +90,7 @@ public:
 };
 
 
-class BreakStatement : public Statement, std::exception{
+class BreakStatement : public Statement, std::exception {
 public:
     ~BreakStatement() noexcept = default;
     void execute() override;
@@ -98,7 +98,7 @@ public:
 };
 
 
-class ContinueStatement : public Statement, std::exception{
+class ContinueStatement : public Statement, std::exception {
 public:
     ~ContinueStatement() noexcept = default;
     void execute() override;
@@ -144,14 +144,10 @@ public:
 
 class ArrayAssigmentStatement : public Statement {
 private:
-    std::string variable;
-    std::shared_ptr<Expression> index;
+    std::shared_ptr<ArrayAccessExpression> array;
     std::shared_ptr<Expression> expression;
 public:
-    explicit ArrayAssigmentStatement(const std::string& variable, std::shared_ptr<Expression> index, std::shared_ptr<Expression> expression);
+    explicit ArrayAssigmentStatement(std::shared_ptr<ArrayAccessExpression> array, std::shared_ptr<Expression> expression);
     void execute() override;
     std::string toString() const override;
-
-
-
 };

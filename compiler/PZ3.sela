@@ -1,0 +1,24 @@
+/!ПЗ№3
+/*
+Дан двумерный массив размерностью 5х6. Сформировать одномерный массив, каждый элемент которого равен произведению четных положительных элементов соответствующего столбца.
+*/
+
+function convertArray(array) {
+    newArray = createArray(5)
+    for (i = 0; i < 5; i = i + 1) {
+        temp = 1
+        for (j = 0; j < 6; j = j + 1) {
+            if (array[i][j] % 2 == 0 && array[i][j] > 0) {
+                temp = temp * array[i][j]
+            }
+        }
+        newArray[i] = temp
+    }
+    return newArray
+}
+
+array = [[-2; 6; 2; 1; 0; -4]; [-2; 0; 2; 4; 0; -4]; [2; -6; 0; 1; 2; -5]; [-2; 3; -2; -1; 4; -5]; [-2; 1; -2; 1; 4; -4]]
+
+newArray = convertArray(array)
+
+println(newArray)

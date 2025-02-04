@@ -11,7 +11,7 @@
 
 using namespace std;
 
-std::string readFile(const std::string &filename) {
+std::string readFile(const std::string& filename) {
   std::ifstream file(filename, std::ios::binary);
   if (!file) {
     throw std::runtime_error("Could not open file");
@@ -31,7 +31,7 @@ int main(int argc, const char* argv[]) {
       if (nameFile.substr(nameFile.size() - 5, 5) != ".sela") {
         throw runtime_error("File format not recognized");
       } else {
-        input = readFile(nameFile); 
+        input = readFile(nameFile);
         lexer L(input);
         vector<token> tokens = L.tokenize();
         parser P(tokens);
@@ -40,8 +40,8 @@ int main(int argc, const char* argv[]) {
         program->execute();
       }
     }
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
-  }    
+  }
   return 0;
 }

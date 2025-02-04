@@ -73,7 +73,6 @@ std::string BlockStatement::toString() const {
 WhileStatement::WhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement)
     : condition(std::move(condition)), statement(std::move(statement)) {}
 
-
 void WhileStatement::execute() {
     while (condition->eval()->asNumber()) {
         try {
@@ -107,13 +106,13 @@ std::string DoWhileStatement::toString() const {
 }
 
 
-DoWhileStatement::DoWhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement) 
+DoWhileStatement::DoWhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement)
     : condition(std::move(condition)), statement(std::move(statement)) {}
 
 
 
 
-ForStatement::ForStatement(std::shared_ptr<Statement> initialization, std::shared_ptr<Expression> termination, std::shared_ptr<Statement> increment, std::shared_ptr<Statement> statement) 
+ForStatement::ForStatement(std::shared_ptr<Statement> initialization, std::shared_ptr<Expression> termination, std::shared_ptr<Statement> increment, std::shared_ptr<Statement> statement)
     : initialization(std::move(initialization)), termination(std::move(termination)), increment(std::move(increment)), statement(std::move(statement)) {}
 
 void ForStatement::execute() {
@@ -137,30 +136,30 @@ void BreakStatement::execute() {
     throw this;
 }
 
-std::string BreakStatement::toString() const { 
-    return "break"; 
+std::string BreakStatement::toString() const {
+    return "break";
 }
 
 void ContinueStatement::execute() {
     throw this;
 }
 
-std::string ContinueStatement::toString() const { 
-    return "continue"; 
+std::string ContinueStatement::toString() const {
+    return "continue";
 }
 
-FunctionStatement::FunctionStatement(std::shared_ptr<FunctionalExpression> function) 
+FunctionStatement::FunctionStatement(std::shared_ptr<FunctionalExpression> function)
     : function(std::move(function)) {}
 
 void FunctionStatement::execute() {
-    function->eval(); 
+    function->eval();
 }
 
 std::string FunctionStatement::toString() const {
     return function->toString();
 }
 
-FunctionDefine::FunctionDefine(const std::string &name, const std::vector<std::string> &argNames, std::shared_ptr<Statement> body)
+FunctionDefine::FunctionDefine(const std::string& name, const std::vector<std::string>& argNames, std::shared_ptr<Statement> body)
     : name(name), argNames(argNames), body(std::move(body)) {}
 
 void FunctionDefine::execute() {
@@ -175,7 +174,7 @@ std::string FunctionDefine::toString() const {
     return "function (" + result + ")" + body->toString();
 }
 
-ReturnStatement::ReturnStatement(std::shared_ptr<Expression> expression) 
+ReturnStatement::ReturnStatement(std::shared_ptr<Expression> expression)
     : expression(std::move(expression)) {}
 
 void ReturnStatement::execute() {
@@ -191,22 +190,19 @@ std::string ReturnStatement::toString() const {
     return "return";
 }
 
-ArrayAssigmentStatement::ArrayAssigmentStatement(const std::string& variable, std::shared_ptr<Expression> index, std::shared_ptr<Expression> expression) 
-    : variable(variable), index(std::move(index)), expression(std::move(expression)) {}
+ArrayAssigmentStatement::ArrayAssigmentStatement(std::shared_ptr<ArrayAccessExpression> array, std::shared_ptr<Expression> expression)
+    : array(std::move(array)), expression(std::move(expression)) {}
+
+
+//! compute array[1][2][3] = ...
 
 void ArrayAssigmentStatement::execute() {
-    std::shared_ptr<Value> var = Variables::get(variable);
-    std::shared_ptr<ArrayValue> array = std::dynamic_pointer_cast<ArrayValue>(var);
-    if (array) {
-        array->set((int)index->eval()->asNumber(), expression->eval());
-    } else {
-        throw std::runtime_error("Array expected");
-    }
+    array->getArray()->set(array->lastIndex(), expression->eval());
 }
 
 std::string ArrayAssigmentStatement::toString() const {
     std::string result;
-    return variable + "[" + index->toString() + "] = " + expression->toString();
+    return array->toString() + " = " + expression->toString();
 }
 
 

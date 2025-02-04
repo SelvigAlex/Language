@@ -53,7 +53,6 @@ std::shared_ptr<Function> Functions::get(const std::string& key) {
     throw std::runtime_error("Unknown function " + key);
 }
 
-
 bool Functions::isExists(const std::string& key) {
     return functions.find(key) != functions.end();
 }
@@ -61,7 +60,6 @@ bool Functions::isExists(const std::string& key) {
 void Functions::set(const std::string& key, std::shared_ptr<Function> value) {
     functions[key] = value;
 }
-
 
 std::shared_ptr<Value> FunctionSin::execute(const std::vector<std::shared_ptr<Value>>& args) const {
     if (args.size() != 1) {
@@ -92,6 +90,22 @@ std::shared_ptr<Value> FunctionPrint::execute(const std::vector<std::shared_ptr<
     return std::make_shared<NumberValue>(0.);
 }
 
+std::shared_ptr<ArrayValue> FunctionCreateArray::createArray(const std::vector<std::shared_ptr<Value>>& args, size_t index) const {
+    size_t size = (size_t)args[index]->asNumber();
+    size_t last = args.size() - 1;
+    std::shared_ptr<ArrayValue> array = std::make_shared<ArrayValue>(size);
+    if (index == last) {
+        for (size_t i = 0; i < size; i++) {
+            array->set(i, std::make_shared<NumberValue>(0.));
+        }
+    } else if (index < last) {
+        for (size_t i = 0; i < size; i++) {
+            array->set(i, createArray(args, index + 1));
+        }
+    }
+    return array;
+}
+
 std::shared_ptr<Value> FunctionCreateArray::execute(const std::vector<std::shared_ptr<Value>>& args) const {
-    return std::make_shared<ArrayValue>(args);
+    return createArray(args, 0);
 }

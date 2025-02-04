@@ -56,12 +56,16 @@ std::shared_ptr<FunctionalExpression> parser::function() {
   return function;
 }
 
-std::shared_ptr<Expression> parser::element() {
+std::shared_ptr<ArrayAccessExpression> parser::element() {
   std::string variable = consume(tokenType::WORD).getLexeme();
-  consume(tokenType::LBRACKET);
-  std::shared_ptr<Expression> index = expression();
-  consume(tokenType::RBRACKET);
-  return std::make_shared<ArrayAccessExpression>(variable, index);
+  std::vector<std::shared_ptr<Expression>> indices;
+  do {
+    consume(tokenType::LBRACKET);
+    indices.push_back(expression());
+    consume(tokenType::RBRACKET);
+  } while (lookMatch(0, tokenType::LBRACKET));
+
+  return std::make_shared<ArrayAccessExpression>(variable, indices);
 }
 
 std::shared_ptr<Expression> parser::array() {
@@ -141,11 +145,11 @@ std::shared_ptr<Expression> parser::equality() {
 }
 
 std::shared_ptr<Statement> parser::statement() {
-  if (get(0).getTokenType() == tokenType::WORD &&  get(1).getTokenType() == tokenType::LPAREN) {
-    return std::make_shared<FunctionStatement>(function());
-  }
   if (match(tokenType::ECHO)) {
     return std::make_shared<EchoStatement>(expression());
+  }
+  if (get(0).getTokenType() == tokenType::WORD && get(1).getTokenType() == tokenType::LPAREN) {
+    return std::make_shared<FunctionStatement>(function());
   }
   if (match(tokenType::IF)) {
     return ifElse();
@@ -182,12 +186,9 @@ std::shared_ptr<Statement> parser::assigmentStatement() {
     return std::make_shared<AssigmentStatement>(variable, expression());
   }
   if (lookMatch(0, tokenType::WORD) && lookMatch(1, tokenType::LBRACKET)) {
-    std::string variable = consume(tokenType::WORD).getLexeme();
-    consume(tokenType::LBRACKET);
-    std::shared_ptr<Expression> index = expression();
-    consume(tokenType::RBRACKET);
+    std::shared_ptr<ArrayAccessExpression> array = element();
     consume(tokenType::EQ);
-    return std::make_shared<ArrayAssigmentStatement>(variable, index, expression());
+    return std::make_shared<ArrayAssigmentStatement>(array, expression());
   }
   throw std::runtime_error("Invalid assignment statement: token " + get(0).getLexeme() + " doesn't match");
 }
@@ -249,11 +250,11 @@ std::shared_ptr<Expression> parser::multiplicative() {
 
   while (true) {
     if (match(tokenType::STAR)) {
-      result =
-        std::make_shared<BinaryExpression>('*', std::move(result), unary());
+      result = std::make_shared<BinaryExpression>('*', std::move(result), unary());
     } else if (match(tokenType::SLASH)) {
-      result =
-        std::make_shared<BinaryExpression>('/', std::move(result), unary());
+      result = std::make_shared<BinaryExpression>('/', std::move(result), unary());
+    } else if (match(tokenType::PERCENT)) {
+      result = std::make_shared<BinaryExpression>('%', std::move(result), unary());
     } else {
       break;
     }
@@ -273,20 +274,19 @@ std::shared_ptr<Expression> parser::unary() {
 
 std::shared_ptr<Expression> parser::primary() {
   const auto& current = get(0);
-  //std::cout << current.toString() << '\n'; 
   if (match(tokenType::NUMBER)) {
     return std::make_shared<ValueExpression>(std::stod(current.getLexeme()));
   }
   if (match(tokenType::HEX_NUMBER)) {
     return std::make_shared<ValueExpression>(std::stoul(current.getLexeme(), nullptr, 16));
   }
-  if (lookMatch(0, tokenType::WORD) &&  lookMatch(1, tokenType::LPAREN)) {
+  if (lookMatch(0, tokenType::WORD) && lookMatch(1, tokenType::LPAREN)) {
     return function();
   }
-  if (lookMatch(0, tokenType::WORD) &&  lookMatch(1, tokenType::LBRACKET)) {
+  if (lookMatch(0, tokenType::WORD) && lookMatch(1, tokenType::LBRACKET)) {
     return element();
   }
-  if (lookMatch(0, tokenType::LBRACKET)){
+  if (lookMatch(0, tokenType::LBRACKET)) {
     return array();
   }
   if (match(tokenType::WORD)) {
@@ -330,7 +330,7 @@ const token& parser::get(int relativePosition) {
 
 bool parser::lookMatch(int pos, tokenType type) {
   return get(pos).getTokenType() == type;
-} 
+}
 
 std::string parser::toString(tokenType type) const {
   switch (type) {
@@ -342,6 +342,8 @@ std::string parser::toString(tokenType type) const {
     return "STAR";
   case tokenType::SLASH:
     return "SLASH";
+  case tokenType::PERCENT:
+    return "PERCENT";
   case tokenType::EQ:
     return "EQ";
   case tokenType::NUMBER:

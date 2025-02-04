@@ -13,6 +13,7 @@ enum class tokenType {
     MINUS,  // -
     STAR,   // *
     SLASH,  // /
+    PERCENT, // %
     EQ,     // =
     EQEQ,   // ==
     EXCL,   // !
@@ -45,7 +46,7 @@ enum class tokenType {
     CONTINUE,
     FUNCTION,
     RETURN,
-    
+
 
     EOF_     // end of file
 };

@@ -6,6 +6,7 @@ const std::unordered_map<std::string, tokenType> lexer::OPERATORS = {
     {"-", tokenType::MINUS},
     {"*", tokenType::STAR},
     {"/", tokenType::SLASH},
+    {"%", tokenType::PERCENT},
     {"(", tokenType::LPAREN},
     {")", tokenType::RPAREN},
     {"{", tokenType::LBRACE},
@@ -28,7 +29,7 @@ const std::unordered_map<std::string, tokenType> lexer::OPERATORS = {
 
 };
 
-const std::string lexer::OPERATOR_CHARS = "+-*/(){}[]=<>!&|;";
+const std::string lexer::OPERATOR_CHARS = "+-*/%(){}[]=<>!&|;";
 
 char lexer::next() {
     return (position < code.size()) ? code[position++] : '\0';
@@ -102,8 +103,7 @@ void lexer::tokenizeWord() {
         addToken(tokenType::FUNCTION);
     } else if (buffer == "return") {
         addToken(tokenType::RETURN);
-    } 
-    else {
+    } else {
         addToken(tokenType::WORD, buffer);
     }
 }
@@ -113,13 +113,13 @@ void lexer::tokenizeText() {
     std::string buffer;
     char current = peek();
     while (true) {
-        if(current == '\\') {
+        if (current == '\\') {
             current = next();
             current = next();
-            switch(current) {
-                case '"': current = next(); buffer += '"'; continue;
-                case 'n': current = next(); buffer += '\n'; continue;
-                case 't': current = next(); buffer += '\t'; continue;
+            switch (current) {
+            case '"': current = next(); buffer += '"'; continue;
+            case 'n': current = next(); buffer += '\n'; continue;
+            case 't': current = next(); buffer += '\t'; continue;
             }
             buffer += '\\';
             continue;
@@ -186,11 +186,9 @@ std::vector<token> lexer::tokenize() {
             tokenizeNumber();
         } else if (std::isalpha(currentSymbol)) {
             tokenizeWord();
-        }
-        else if (currentSymbol == '"') {
+        } else if (currentSymbol == '"') {
             tokenizeText();
-        }
-        else if (OPERATOR_CHARS.find(currentSymbol) != std::string::npos) {
+        } else if (OPERATOR_CHARS.find(currentSymbol) != std::string::npos) {
             tokenizeOperator();
         } else {
             next(); // Пропускаем неизвестные символы
